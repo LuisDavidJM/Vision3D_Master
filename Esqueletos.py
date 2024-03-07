@@ -11,7 +11,7 @@ def leer_binvox(ruta_archivo):
 
 #np.set_printoptions(threshold=np.inf)
 
-ruta_binvox = "../Objetos3D/ArchivosEsqueletoORIGINAL/128x128x128-1E.binvox"
+ruta_binvox = "../Objetos3D/ArchivosEsqueletoORIGINAL/256x256x256-5E.binvox"
 esqueleto = leer_binvox(ruta_binvox)
 
 # # Un punto de inicio hipotético, elige uno que tenga sentido para tu esqueleto
@@ -38,7 +38,16 @@ esqueleto = leer_binvox(ruta_binvox)
 #     # Almacenar las coordenadas convertidas
 #     converted_coords[:, i] = [x, y, z]
 
-#     print(f"{x},{y},{z}")
+#     #print(f"{x},{y},{z}")
+
+# # Convertir coordenadas a lineas en formato CSR
+# with open("../Objetos3D/Pruebas/freeman-ordenado.scr","w") as file:
+#     file.write("3DPOL\n")
+#     for i in range(len(converted_coords[0])):
+#         x = converted_coords[0][i]
+#         y = converted_coords[1][i]
+#         z = converted_coords[2][i]
+#         file.write(f"{x},{y},{z}\n")
 
 converted_coords = np.zeros(esqueleto.data.shape, dtype=np.int16)
 
@@ -70,5 +79,6 @@ with open("../Objetos3D/Pruebas/freeman.scr","w") as file:
         y = converted_coords[1][i]
         z = converted_coords[2][i]
         file.write(f"{x},{y},{z}\n")
+        print(f"{x},{y},{z}")
 
 
