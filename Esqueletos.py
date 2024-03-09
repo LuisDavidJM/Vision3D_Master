@@ -64,7 +64,7 @@ def podar_ramas(esqueleto, longitud_minima):
 
 def manejo_de_archivos(ruta_rotacion):
 
-    rutas_binvox = f"../Objetos3D/EsqueletoORIGINAL/{ruta_rotacion}/"
+    rutas_binvox = f"Objetos3D/EsqueletoORIGINAL/{ruta_rotacion}/"
     nombres_archivos = [f for f in os.listdir(rutas_binvox) if f.endswith('.binvox')]
 
     # Se crea una lista para almacenar los datos
@@ -85,8 +85,8 @@ def manejo_de_archivos(ruta_rotacion):
 
     ######################### EXPORTAR ESQUELETO A FORMATO SCR ######################################
 
-    ruta_base_e = f"../Objetos3D/EsqueletoSCR/{ruta_rotacion}/"
-    ruta_base_f = f"../Objetos3D/FreemanSCR/{ruta_rotacion}/"
+    ruta_base_e = f"Objetos3D/EsqueletoSCR/{ruta_rotacion}/"
+    ruta_base_f = f"Objetos3D/FreemanSCR/{ruta_rotacion}/"
 
     # Asegúrate de que la ruta base existe, si no, créala
     if not os.path.exists(ruta_base_e):

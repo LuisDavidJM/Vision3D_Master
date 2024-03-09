@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 # Función para calcular la distancia Euclidiana entre dos puntos
 def distancia_euclidiana(punto1, punto2):
@@ -112,5 +113,16 @@ def ajuste_coordenadas(out):
         
         segmentos_ajustados.append(segmento_ajustado)
 
-    return segmentos_ajustados
+    # Contenedor para los nuevos segmentos ajustados
+    segmentos_procesados = []
+
+    for segmento in segmentos_ajustados:
+        # Calcular la diferencia entre coordenadas consecutivas
+        diferencias = np.diff(segmento, axis=1)
+        # Eliminar la primera coordenada original dejando las diferencias
+        segmento_procesado = diferencias
+        segmentos_procesados.append(segmento_procesado)
+
+    #return segmentos_ajustados
+    return segmentos_procesados
 
