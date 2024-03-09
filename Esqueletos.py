@@ -164,7 +164,7 @@ def manejo_de_archivos(ruta_rotacion):
                 
                 # Calcula la distancia euclidiana entre el punto actual y el siguiente
                 distancia = np.linalg.norm(np.array(punto_actual) - np.array(punto_siguiente))
-                
+
                 # Escribe el punto actual
                 x, y, z = punto_actual
                 file.write(f"{x},{y},{z}\n")

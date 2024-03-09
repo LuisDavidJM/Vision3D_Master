@@ -1,6 +1,7 @@
+from DiccionarioF16 import diccionario_f26
+from Coordenadas import ajuste_coordenadas
 import numpy as np
 import Esqueletos
-from DiccionarioF16 import diccionario_f26
 
 def buscar_letras(coordenadas_array):
     letras = []
@@ -27,6 +28,8 @@ letras_encontradas = buscar_letras(coordenadas_array_np)
 #print(letras_encontradas)
 
 
+
+
 ruta_rotacion = ["Original", "Rotado15", "Rotado25", "Rotado45", "Rotado75"]
 
 # Coordenadas de los 10 esqueletos originales y cada rotación
@@ -39,38 +42,10 @@ out = Esqueletos.manejo_de_archivos(ruta_rotacion[0])
 np.set_printoptions(threshold=np.inf)
 #print(out[0])
 
-out_inicio = out[0] - out[0][:, 0][:, np.newaxis]
-#print(out_inicio)
+coord = ajuste_coordenadas(out[3])
 
-# Calcular las diferencias entre puntos adyacentes
-diferencias = np.diff(out[0], axis=1)
-
-# Calcular la distancia Euclidiana para cada par de puntos adyacentes
-distancias = np.sqrt(np.sum(diferencias**2, axis=0))
-
-# Inicializar el índice de inicio del segmento actual
-inicio = 0
-
-# Lista para almacenar los arrays resultantes
-arrays_resultantes = []
-
-# Iterar sobre cada distancia y verificar la condición
-for i, distancia in enumerate(distancias, start=1):
-    if distancia > 2:
-        # Si la distancia es mayor a 2, extraer el segmento actual y agregarlo a la lista
-        segmento = out[0][:, inicio:i]
-        arrays_resultantes.append(segmento)
-        inicio = i  # Actualizar el índice de inicio para el próximo segmento
-
-# No olvidar agregar el último segmento después del último salto encontrado
-if inicio < out[0].shape[1]:
-    segmento_final = out[0][:, inicio:]
-    arrays_resultantes.append(segmento_final)
-
-# Mostrar los arrays resultantes
-for i, array in enumerate(arrays_resultantes, start=1):
-    print(f"Array {i}:")
-    print(array)
-    print()  # Línea en blanco para separar los arrays
-
-
+# Mostrar los segmentos ajustados
+for i, seg in enumerate(coord, start=1):
+    print(f"Segmento {i}:")
+    print(seg)
+    print()
