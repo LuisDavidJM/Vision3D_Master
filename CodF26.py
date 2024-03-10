@@ -18,8 +18,8 @@ def buscar_letras(coordenadas_array):
             letras.append('')
     return letras
 
-def cadenas_y_frecuencia(coordenadas):
-    coord = ajuste_coordenadas(coordenadas)
+def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
+    coord = ajuste_coordenadas(coordenadas, ruta_rotacion, idx)
 
     ######################### CADENA RESULTANTE #################################
 
@@ -64,6 +64,8 @@ def cadenas_y_frecuencia(coordenadas):
 
     return frecuencias
 
+######################### CODIGO PRINCIPAL #################################
+
 ruta_rotacion = ["Original", "Rotado15", "Rotado25", "Rotado45", "Rotado75"]
 
 print("OPCIONES: 0, 15, 25, 45, 75")
@@ -72,14 +74,19 @@ grados = input("Selecciona un grado: ")
 # Coordenadas de los 10 esqueletos originales y cada rotación
 if (grados == "0"):
     out = Esqueletos.manejo_de_archivos(ruta_rotacion[0])
+    ruta_rotacion = ruta_rotacion[0]
 elif (grados == "15"):
     out = Esqueletos.manejo_de_archivos(ruta_rotacion[1])
+    ruta_rotacion = ruta_rotacion[1]
 elif (grados == "25"):
     out = Esqueletos.manejo_de_archivos(ruta_rotacion[2])
+    ruta_rotacion = ruta_rotacion[2]
 elif (grados == "45"):
     out = Esqueletos.manejo_de_archivos(ruta_rotacion[3])
+    ruta_rotacion = ruta_rotacion[3]
 elif (grados == "75"):
     out = Esqueletos.manejo_de_archivos(ruta_rotacion[4])
+    ruta_rotacion = ruta_rotacion[4]
 else:
     print("El valor ingresado no es valido.....")
     input("Presione ENTER para salir")
@@ -91,7 +98,7 @@ frecuencias_globales = {}
 for i in range(len(out)):
     print("")
     print(f"------------------------- OBJETO {i} -------------------------")
-    frecuencias = cadenas_y_frecuencia(out[i])
+    frecuencias = cadenas_y_frecuencia(out[i], ruta_rotacion, i)
     for simbolo, frecuencia in frecuencias.items():
         if simbolo not in frecuencias_globales:
             frecuencias_globales[simbolo] = frecuencia

@@ -18,7 +18,7 @@ def distancia_euclidiana_mod(p1, p2):
     return np.linalg.norm(p1 - p2)
 
 
-def ajuste_coordenadas(out):
+def ajuste_coordenadas(out, ruta_rotacion, idx):
     ######################### AJUSTAR COORDENADAS ###################################################
 
     out_inicio = out - out[:, 0][:, np.newaxis]
@@ -123,6 +123,34 @@ def ajuste_coordenadas(out):
         segmento_procesado = diferencias
         segmentos_procesados.append(segmento_procesado)
 
-    #return segmentos_ajustados
+    # Ruta del archivo donde se guardarán las coordenadas
+    ruta_base_f = f"Objetos3D/BaseDeMalla/{ruta_rotacion}/"
+
+    # Asegúrate de que la ruta base existe, si no, créala
+    if not os.path.exists(ruta_base_f):
+        os.makedirs(ruta_base_f)
+
+    # Genera un nombre de archivo único para cada conjunto de resultados
+    nombre_archivo_f = f"BaseDeMalla{ruta_rotacion}-{idx}.txt"
+    ruta_archivo_f = os.path.join(ruta_base_f, nombre_archivo_f)
+
+    # Abrimos el archivo para escritura con las modificaciones
+    with open(ruta_archivo_f, "w") as archivo:
+        for i, sub_array in enumerate(segmentos_procesados):
+            # Determinamos si necesitamos añadir un paréntesis extra
+            parentesis_extra = "()" if i % 2 != 0 else ""
+            
+            # Escribimos el paréntesis inicial extra si es necesario
+            if parentesis_extra:
+                archivo.write(parentesis_extra[0])
+                
+            # Escribimos las coordenadas con la separación solicitada
+            coordenadas = ", ".join(f"({x},{y},{z})" for x, y, z in zip(sub_array[0], sub_array[1], sub_array[2]))
+            archivo.write(coordenadas)
+            
+            # Escribimos el paréntesis final extra si es necesario
+            if parentesis_extra:
+                archivo.write(parentesis_extra[1])
+
     return segmentos_procesados
 

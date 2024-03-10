@@ -100,6 +100,8 @@ def manejo_de_archivos(ruta_rotacion):
 
     for idx, resultado in enumerate(resultados):
         converted_coords = binvox_rw.dense_to_sparse(resultado)
+
+        converted_coords_inicio = converted_coords - converted_coords[:, 0][:, np.newaxis]
         
         # Genera un nombre de archivo único para cada conjunto de resultados
         nombre_archivo_e = f"Esqueleto{ruta_rotacion}-{idx}.scr"
@@ -107,10 +109,10 @@ def manejo_de_archivos(ruta_rotacion):
         
         # Abre y escribe en el archivo correspondiente
         with open(ruta_archivo_e, "w") as file:
-            for i in range(len(converted_coords[0])):
-                x = converted_coords[0][i]
-                y = converted_coords[1][i]
-                z = converted_coords[2][i]
+            for i in range(len(converted_coords_inicio[0])):
+                x = converted_coords_inicio[0][i]
+                y = converted_coords_inicio[1][i]
+                z = converted_coords_inicio[2][i]
                 file.write("_box\n")
                 file.write("C\n")
                 file.write(f"{x},{y},{z}\n")
@@ -147,7 +149,9 @@ def manejo_de_archivos(ruta_rotacion):
 
         ######################### EXPORTAR VECTORES FREEMAN DE ESQUELETO #################################
 
-        coordenadas = list(zip(converted_coords[0], converted_coords[1], converted_coords[2]))
+        converted_coords_inicio = converted_coords - converted_coords[:, 0][:, np.newaxis]
+
+        coordenadas = list(zip(converted_coords_inicio[0], converted_coords_inicio[1], converted_coords_inicio[2]))
 
         # Genera un nombre de archivo único para cada conjunto de resultados
         nombre_archivo_f = f"Freeman{ruta_rotacion}-{idx}.scr"
