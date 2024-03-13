@@ -107,6 +107,4 @@ diccionario_3drc = {
     (90, RAIZ_2, tuple([-1,2,-1])): 'v',
     (60, UNO, tuple([-1,1,-1])): 'w',
     (35, RAIZ_2, tuple([-1,0,-1])): 'x',
-    # Recta
-    (0, 2.0, tuple([0,0,0])): 'y',
 }

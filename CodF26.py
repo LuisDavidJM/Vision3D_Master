@@ -67,7 +67,7 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
 ######################### CODIGO PRINCIPAL #################################
 
 ruta_rotacion = ["Original", "Rotado15", "Rotado25", "Rotado45", "Rotado75"]
-
+print("#################### CODIFICACIÓN F26 ####################")
 print("OPCIONES: 0, 15, 25, 45, 75")
 grados = input("Selecciona un grado: ")
 
@@ -108,7 +108,7 @@ for i in range(len(out)):
 # Calcular el promedio de la frecuencia para cada símbolo
 promedios = {simbolo: frecuencia / len(out) for simbolo, frecuencia in frecuencias_globales.items()}
 
-print("\n\n----------- PROMEDIIO DE LA FRECUENCIA DE APARICION ---------")
+print("\n\n----------- PROMEDIO DE LA FRECUENCIA DE APARICION ---------")
 
 # Imprimir los promedios de frecuencia
 for simbolo, promedio in sorted(promedios.items()):
