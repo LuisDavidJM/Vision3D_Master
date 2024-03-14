@@ -4,7 +4,7 @@ import numpy as np
 import Esqueletos
 import sys
 
-# Función para calcular el ángulo entre dos puntos
+# Función para calcular el angulo entre dos puntos
 def calcular_angulo(punto_a, punto_c):
     vector_a = np.array(punto_a)
     vector_c = np.array(punto_c)
@@ -12,7 +12,7 @@ def calcular_angulo(punto_a, punto_c):
     norma_a = np.linalg.norm(vector_a)
     norma_c = np.linalg.norm(vector_c)
     coseno_angulo = producto_punto / (norma_a * norma_c)
-    angulo_radianes = np.arccos(np.clip(coseno_angulo, -1.0, 1.0))  # Asegurar que el valor esté en el rango válido para arccos
+    angulo_radianes = np.arccos(np.clip(coseno_angulo, -1.0, 1.0))
     angulo_grados = np.degrees(angulo_radianes)
     return angulo_grados
 
@@ -22,17 +22,15 @@ def calcular_distancia(punto_b, punto_c):
 
 # Función para comparar los datos calculados con el diccionario y generar letras
 def comparar_y_generar_letras(puntos):
-    # Intercambiar los ejes x, z
-    #puntos[[0, 2]] = puntos[[2, 0]]
     puntos = puntos.T
-    #print(puntos)
     letras = []
-    for i in range(0, len(puntos) - 2, 1):  # Asumiendo puntos es una lista de 3 listas (x, y, z)
+    # Ciclo para generar los valores de las coordenadas
+    for i in range(0, len(puntos) - 2, 1):
         angulo = round(calcular_angulo(puntos[i], puntos[i+2]))
         distancia = round(calcular_distancia(puntos[i+1], puntos[i+2]), 4)
         producto_cruz = tuple(np.cross(puntos[i], puntos[i+2]))
         
-        # Buscar coincidencias en el diccionario
+        # Se buscan las coincidencias en el diccionario
         clave = (angulo, distancia, producto_cruz)
         if clave in diccionario_3drc:
             letras.append(diccionario_3drc[clave])
@@ -56,15 +54,12 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
 
     resultado_final = ""
 
+    # Ciclo para recorrer todos los objetos y obtener sus cadenas
     for i, seg in enumerate(coord, start=1):
-        # Transponiendo el array principal para obtener un array de puntos (n, 3)
         letras_encontradas = comparar_y_generar_letras(seg)
-        # Si el índice es impar, no añadir paréntesis; si es par, sí añadirlos.
         if i % 2 == 0:
-            # Índices pares: añadir paréntesis
             segmento_en_letras = "(" + "".join(letras_encontradas) + ")"
         else:
-            # Índices impares: no añadir paréntesis
             segmento_en_letras = "".join(letras_encontradas)
         
         resultado_final += segmento_en_letras
@@ -74,10 +69,9 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
 
      ######################### FRECUENCIA DE APARICION #################################
 
-    # Remover los paréntesis de la cadena
     resultado_sin_parentesis = resultado_final.replace("(", "").replace(")", "")
 
-    # Calcular la frecuencia de aparición de cada símbolo, ignorando los paréntesis
+    # Se calcula la frecuencia de aparición de cada símbolo
     frecuencias = {}
     for simbolo in resultado_sin_parentesis:
         if simbolo not in frecuencias:
@@ -85,12 +79,12 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
         else:
             frecuencias[simbolo] += 1
 
-    # Ordenar el diccionario de frecuencias por clave (símbolo) alfabéticamente
+    # Se ordena el diccionario de frecuencias alfabéticamente
     frecuencias_ordenadas = dict(sorted(frecuencias.items()))
 
     print("\nFrecuancia de aparición: ")
 
-    # Imprimir cada frecuencia consecutivamente
+    # Se imprime cada frecuencia consecutivamente
     for simbolo, frecuencia in frecuencias_ordenadas.items():
         print(f"{simbolo}: {frecuencia}", end=", ")
 
@@ -127,6 +121,7 @@ else:
 # Diccionario global para acumular frecuencias de todos los arrays
 frecuencias_globales = {}
 
+# Ciclo que recorre todos los objetos para asignar frecuencias
 for i in range(len(out)):
     print("")
     print(f"------------------------- OBJETO {i} -------------------------")
@@ -137,11 +132,11 @@ for i in range(len(out)):
         else:
             frecuencias_globales[simbolo] += frecuencia
 
-# Calcular el promedio de la frecuencia para cada símbolo
+# Se calcula el promedio de la frecuencia para cada símbolo
 promedios = {simbolo: frecuencia / len(out) for simbolo, frecuencia in frecuencias_globales.items()}
 
 print("\n\n----------- PROMEDIO DE LA FRECUENCIA DE APARICION ---------")
 
-# Imprimir los promedios de frecuencia
+# Se imprimen los promedios de frecuencia
 for simbolo, promedio in sorted(promedios.items()):
     print(f"{simbolo}: {promedio}", end=", ")

@@ -4,13 +4,14 @@ import numpy as np
 import Esqueletos
 import sys
 
+# Función para comparar las coordenadas con el diccionario
 def buscar_letras(coordenadas_array):
     letras = []
-    # Utiliza numpy para transponer el array 3xN y obtener tuplas de coordenadas (x, y, z)
+    # Se obtienen las coordenadas en tuplas (x, y, z)
     coordenadas_transpuestas = np.transpose(coordenadas_array)
 
     for coordenada in coordenadas_transpuestas:
-        # Convierte la tupla de numpy a una tupla de Python para que coincida con las claves del diccionario
+        # Se convierte la tupla de numpy a una tupla de Python para que coincida con el diccionario
         coordenada_tupla = tuple(coordenada)
         if coordenada_tupla in diccionario_f26:
             letras.append(diccionario_f26[coordenada_tupla])
@@ -25,14 +26,12 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
 
     resultado_final = ""
 
+    # Ciclo para recorrer todos los objetos y obtener sus cadenas
     for i, seg in enumerate(coord, start=1):
         letras_encontradas = buscar_letras(seg)
-        # Si el índice es impar, no añadir paréntesis; si es par, sí añadirlos.
         if i % 2 == 0:
-            # Índices pares: añadir paréntesis
             segmento_en_letras = "(" + "".join(letras_encontradas) + ")"
         else:
-            # Índices impares: no añadir paréntesis
             segmento_en_letras = "".join(letras_encontradas)
         
         resultado_final += segmento_en_letras
@@ -42,10 +41,9 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
 
     ######################### FRECUENCIA DE APARICION #################################
 
-    # Remover los paréntesis de la cadena
     resultado_sin_parentesis = resultado_final.replace("(", "").replace(")", "")
 
-    # Calcular la frecuencia de aparición de cada símbolo, ignorando los paréntesis
+    # Se calcula la frecuencia de aparición de cada símbolo
     frecuencias = {}
     for simbolo in resultado_sin_parentesis:
         if simbolo not in frecuencias:
@@ -53,12 +51,12 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
         else:
             frecuencias[simbolo] += 1
 
-    # Ordenar el diccionario de frecuencias por clave (símbolo) alfabéticamente
+    # Se ordena el diccionario de frecuencias alfabéticamente
     frecuencias_ordenadas = dict(sorted(frecuencias.items()))
 
     print("\nFrecuancia de aparición: ")
 
-    # Imprimir cada frecuencia consecutivamente
+    # Se imprime cada frecuencia consecutivamente
     for simbolo, frecuencia in frecuencias_ordenadas.items():
         print(f"{simbolo}: {frecuencia}", end=", ")
 
@@ -95,6 +93,7 @@ else:
 # Diccionario global para acumular frecuencias de todos los arrays
 frecuencias_globales = {}
 
+# Ciclo que recorre todos los objetos para asignar frecuencias
 for i in range(len(out)):
     print("")
     print(f"------------------------- OBJETO {i} -------------------------")
@@ -105,12 +104,12 @@ for i in range(len(out)):
         else:
             frecuencias_globales[simbolo] += frecuencia
 
-# Calcular el promedio de la frecuencia para cada símbolo
+# Se calcula el promedio de la frecuencia para cada símbolo
 promedios = {simbolo: frecuencia / len(out) for simbolo, frecuencia in frecuencias_globales.items()}
 
 print("\n\n----------- PROMEDIO DE LA FRECUENCIA DE APARICION ---------")
 
-# Imprimir los promedios de frecuencia
+# Se imprimen los promedios de frecuencia
 for simbolo, promedio in sorted(promedios.items()):
     print(f"{simbolo}: {promedio}", end=", ")
 

@@ -2,7 +2,7 @@ import trimesh
 import numpy as np
 import os
 
-######################### ROTAR LOS objetos OBJ ######################################
+######################### ROTAR LOS OBJETOS OBJ ######################################
 
 def rotar_guardar_obj(ruta_archivo, ruta_destino, eje, grados):
     # Se carga el modelo OBJ

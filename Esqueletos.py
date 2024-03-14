@@ -12,28 +12,28 @@ def leer_binvox(ruta_archivo):
 
 ######################### ELIMINAR RAMAS INECESARIAS ############################################
 
+# Se encuentra los vecinos directos de un punto en el esqueleto
 def encontrar_vecinos(punto, esqueleto):
-    """Encuentra los vecinos directos de un punto en el esqueleto."""
     x, y, z = punto
     vecinos = []
     for dx in (-1, 0, 1):
         for dy in (-1, 0, 1):
             for dz in (-1, 0, 1):
                 if dx == dy == dz == 0:
-                    continue  # Ignora el punto actual
+                    continue
                 nx, ny, nz = x + dx, y + dy, z + dz
                 if 0 <= nx < esqueleto.shape[0] and 0 <= ny < esqueleto.shape[1] and 0 <= nz < esqueleto.shape[2]:
                     if esqueleto[nx, ny, nz]:
                         vecinos.append((nx, ny, nz))
     return vecinos
 
+# Se realiza DFS en el esqueleto para identificar ramas y decide si podarlas
 def dfs_podar(esqueleto, punto, visitados, rama_actual, ramas):
-    """Realiza DFS en el esqueleto para identificar ramas y decide si podarlas."""
     visitados.add(punto)
     rama_actual.append(punto)
     vecinos = encontrar_vecinos(punto, esqueleto)
     
-    if len(vecinos) < 2:  # Punto de inicio/final de una rama o punto aislado
+    if len(vecinos) < 2:  
         ramas.append(rama_actual)
         return
     
@@ -41,8 +41,8 @@ def dfs_podar(esqueleto, punto, visitados, rama_actual, ramas):
         if vecino not in visitados:
             dfs_podar(esqueleto, vecino, visitados, rama_actual.copy(), ramas)
 
+# Se identifican y eliminan ramas inecesarias del esqueleto
 def podar_ramas(esqueleto, longitud_minima):
-    """Identifica y elimina ramas del esqueleto basado en una longitud mínima."""
     puntos_esqueleto = np.argwhere(esqueleto == 1)
     esqueleto_podado = np.zeros_like(esqueleto)
     visitados = set()
@@ -52,7 +52,7 @@ def podar_ramas(esqueleto, longitud_minima):
         if tuple(punto) not in visitados:
             dfs_podar(esqueleto, tuple(punto), visitados, [], ramas)
 
-    # Procesar las ramas identificadas y eliminar las que son más cortas que la longitud mínima
+    # Se procesan las ramas identificadas y se eliminan las que son más cortas que la longitud mínima
     for rama in ramas:
         if len(rama) >= longitud_minima:
             for punto in rama:
@@ -70,17 +70,15 @@ def manejo_de_archivos(ruta_rotacion):
     # Se crea una lista para almacenar los datos
     resultados = []
 
-    # Ciclo que se encarga de recorrer todos los archivos e imprimir el area de la superficie
+    # Ciclo que se encarga de recorrer todos los archivos
     for nombre_archivo in nombres_archivos:
         # Se crea la ruta completa del archivo
         path_completo = os.path.join(rutas_binvox, nombre_archivo)
-
         esqueleto = leer_binvox(path_completo)
 
-        # Aplica la poda al esqueleto leído
+        # Se aplica la poda al esqueleto leido
         longitud_minima_para_podar = 50
         esqueleto_podado = podar_ramas(esqueleto, longitud_minima_para_podar)
-
         resultados.append(esqueleto_podado)
 
     ######################### EXPORTAR ESQUELETO A FORMATO SCR ######################################
@@ -88,26 +86,26 @@ def manejo_de_archivos(ruta_rotacion):
     ruta_base_e = f"Objetos3D/EsqueletoSCR/{ruta_rotacion}/"
     ruta_base_f = f"Objetos3D/FreemanSCR/{ruta_rotacion}/"
 
-    # Asegúrate de que la ruta base existe, si no, créala
+    # Se asegura de que las rutas base existan, si no, se crean
     if not os.path.exists(ruta_base_e):
         os.makedirs(ruta_base_e)
 
-    # Asegúrate de que la ruta base existe, si no, créala
     if not os.path.exists(ruta_base_f):
         os.makedirs(ruta_base_f)
 
     coodenadas_finales = []
 
     for idx, resultado in enumerate(resultados):
+        # Se convierten los arrays a coordenadas
         converted_coords = binvox_rw.dense_to_sparse(resultado)
 
         converted_coords_inicio = converted_coords - converted_coords[:, 0][:, np.newaxis]
         
-        # Genera un nombre de archivo único para cada conjunto de resultados
+        # Se genera un nombre de archivo unico para cada conjunto de esqueleto
         nombre_archivo_e = f"Esqueleto{ruta_rotacion}-{idx}.scr"
         ruta_archivo_e = os.path.join(ruta_base_e, nombre_archivo_e)
         
-        # Abre y escribe en el archivo correspondiente
+        # Se abre y se escribe en el archivo correspondiente
         with open(ruta_archivo_e, "w") as file:
             for i in range(len(converted_coords_inicio[0])):
                 x = converted_coords_inicio[0][i]
@@ -121,7 +119,7 @@ def manejo_de_archivos(ruta_rotacion):
 
         ######################### ORDENAR COORDENADAS ###################################################
 
-        # Un punto de inicio hipotético, elige uno que tenga sentido para tu esqueleto
+        # Se selecciona el punto inicial para comenzar el ordenamiento
         punto_inicio = converted_coords[:, 0]
         ordenado = [punto_inicio]
         indices_a_ordenar = list(range(1, converted_coords.shape[1]))
@@ -137,12 +135,13 @@ def manejo_de_archivos(ruta_rotacion):
 
         converted_coords = np.zeros(coordenadas_ordenadas.shape, dtype=np.int16)
 
-        for i in range(coordenadas_ordenadas.shape[1]):  # Asumiendo que esqueleto.data tiene la forma (3, N)
+        # Se redondean las coordenadas a numeros enteros
+        for i in range(coordenadas_ordenadas.shape[1]):
             x = round(coordenadas_ordenadas[0][i])
             y = round(coordenadas_ordenadas[1][i])
             z = round(coordenadas_ordenadas[2][i])
             
-            # Almacenar las coordenadas convertidas
+            # Se almacenan las coordenadas convertidas
             converted_coords[:, i] = [x, y, z]
 
         coodenadas_finales.append(converted_coords)
@@ -153,42 +152,40 @@ def manejo_de_archivos(ruta_rotacion):
 
         coordenadas = list(zip(converted_coords_inicio[0], converted_coords_inicio[1], converted_coords_inicio[2]))
 
-        # Genera un nombre de archivo único para cada conjunto de resultados
+        # Se genera un nombre de archivo unico para cada conjunto de vectores
         nombre_archivo_f = f"Freeman{ruta_rotacion}-{idx}.scr"
         ruta_archivo_f = os.path.join(ruta_base_f, nombre_archivo_f)
 
-        # Convertir coordenadas a lineas en formato CSR
+        # Se convierten las coordenadas a lineas en formato CSR
         with open(ruta_archivo_f, "w") as file:
-            # Inicia el comando _LINE una vez al principio
             file.write("_LINE\n")
-            # Itera hasta el penúltimo elemento para comparar con el siguiente
+            # Se itera hasta el penúltimo elemento para comparar con el siguiente
             for i in range(len(coordenadas) - 1):  
                 punto_actual = coordenadas[i]
                 punto_siguiente = coordenadas[i + 1]
                 
-                # Calcula la distancia euclidiana entre el punto actual y el siguiente
+                # Se calcula la distancia euclidiana entre el punto actual y el siguiente
                 distancia = np.linalg.norm(np.array(punto_actual) - np.array(punto_siguiente))
 
-                # Escribe el punto actual
+                # Se escribe el punto actual
                 x, y, z = punto_actual
                 file.write(f"{x},{y},{z}\n")
                 
+                # Si la distancia al siguiente punto es mayor que 2, termina la línea actual y comienza una nueva
                 if distancia > 2:
-                    # Si la distancia al siguiente punto es mayor que 2, termina la línea actual y comienza una nueva
-                    # Usando el siguiente punto como el inicio de la nueva línea
                     file.write("\n_LINE\n") 
 
             x, y, z = coordenadas[-1]
             file.write(f"{x},{y},{z}\n")
 
-        # Leer el contenido del archivo
+        # Se lee el contenido del archivo
         with open(ruta_archivo_f, "r") as file:
             lineas = file.readlines()
 
-        # Eliminar la última línea
+        # Se elimina la ultima línea
         lineas = lineas[:-1]
 
-        # Volver a escribir el contenido sin la última línea en el archivo
+        # Se vuelve a escribir el contenido sin la última linea en el archivo
         with open(ruta_archivo_f, "w") as file:
             file.writelines(lineas)
             file.writelines("\n")
