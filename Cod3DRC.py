@@ -2,7 +2,7 @@ from Diccionarios import diccionario_3drc
 from Coordenadas import ajuste_coordenadas
 import numpy as np
 import Esqueletos
-import sys
+import matplotlib.pyplot as plt
 
 # Función para calcular el angulo entre dos puntos
 def calcular_angulo(punto_a, punto_c):
@@ -64,9 +64,6 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
         
         resultado_final += segmento_en_letras
 
-    print("Cadena producida: ")
-    print(resultado_final)
-
      ######################### FRECUENCIA DE APARICION #################################
 
     resultado_sin_parentesis = resultado_final.replace("(", "").replace(")", "")
@@ -82,61 +79,54 @@ def cadenas_y_frecuencia(coordenadas, ruta_rotacion, idx):
     # Se ordena el diccionario de frecuencias alfabéticamente
     frecuencias_ordenadas = dict(sorted(frecuencias.items()))
 
-    print("\nFrecuancia de aparición: ")
-
-    # Se imprime cada frecuencia consecutivamente
-    for simbolo, frecuencia in frecuencias_ordenadas.items():
-        print(f"{simbolo}: {frecuencia}", end=", ")
-
-    return frecuencias
+    return resultado_final, frecuencias_ordenadas
 
 ######################### CODIGO PRINCIPAL #################################
 
-ruta_rotacion = ["Original", "Rotado15", "Rotado25", "Rotado45", "Rotado75"]
-print("#################### CODIFICACIÓN 3DRC ####################")
-print("OPCIONES: 0, 15, 25, 45, 75")
-grados = input("Selecciona un grado: ")
-
-# Coordenadas de los 10 esqueletos originales y cada rotación
-if (grados == "0"):
-    out = Esqueletos.manejo_de_archivos(ruta_rotacion[0])
-    ruta_rotacion = ruta_rotacion[0]
-elif (grados == "15"):
-    out = Esqueletos.manejo_de_archivos(ruta_rotacion[1])
-    ruta_rotacion = ruta_rotacion[1]
-elif (grados == "25"):
-    out = Esqueletos.manejo_de_archivos(ruta_rotacion[2])
-    ruta_rotacion = ruta_rotacion[2]
-elif (grados == "45"):
-    out = Esqueletos.manejo_de_archivos(ruta_rotacion[3])
-    ruta_rotacion = ruta_rotacion[3]
-elif (grados == "75"):
-    out = Esqueletos.manejo_de_archivos(ruta_rotacion[4])
-    ruta_rotacion = ruta_rotacion[4]
-else:
-    print("El valor ingresado no es valido.....")
-    input("Presione ENTER para salir")
-    sys.exit()
-
-# Diccionario global para acumular frecuencias de todos los arrays
-frecuencias_globales = {}
-
-# Ciclo que recorre todos los objetos para asignar frecuencias
-for i in range(len(out)):
-    print("")
-    print(f"------------------------- OBJETO {i} -------------------------")
-    frecuencias = cadenas_y_frecuencia(out[i], ruta_rotacion, i)
+# Función para imprimir la frecuencia de los simbolos
+def imprimir_tabla(frecuencias):
+    print("Símbolo\tFrecuencia")
     for simbolo, frecuencia in frecuencias.items():
-        if simbolo not in frecuencias_globales:
-            frecuencias_globales[simbolo] = frecuencia
-        else:
-            frecuencias_globales[simbolo] += frecuencia
+        frecuencia = frecuencias.get(simbolo, 0)
+        print(f"{simbolo}\t{frecuencia}")
 
-# Se calcula el promedio de la frecuencia para cada símbolo
-promedios = {simbolo: frecuencia / len(out) for simbolo, frecuencia in frecuencias_globales.items()}
 
-print("\n\n----------- PROMEDIO DE LA FRECUENCIA DE APARICION ---------")
+def imprimir_y_graficar_frecuencias(frecuencias, titulo):
+    simbolos = list(frecuencias.keys())
+    counts = list(frecuencias.values())
+    plt.figure(figsize=(10, 6))
+    plt.bar(simbolos, counts)
+    plt.title(titulo)
+    plt.xlabel('Símbolos')
+    plt.ylabel('Frecuencia')
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.show()
 
-# Se imprimen los promedios de frecuencia
-for simbolo, promedio in sorted(promedios.items()):
-    print(f"{simbolo}: {promedio}", end=", ")
+
+ruta_rotacion = ["Original", "Rotado15", "Rotado25", "Rotado45", "Rotado75"]
+angulos = [0, 15, 25, 45, 75]
+frecuencias_globales_por_objeto = {i: {} for i in range(10)}
+
+for i in range(10):
+    frecuencias_agregadas = {symbol: [] for symbol in diccionario_3drc.values()}
+    print(f"\n------------------------- OBJETO {i} -------------------------")
+    for angulo, ruta in zip(angulos, ruta_rotacion):
+        #print(ruta)
+        out = Esqueletos.manejo_de_archivos(ruta)
+        print(f"\nCODIFICACIÓN 3DRC PARA ROTACIÓN {angulo} GRADOS:")
+        cadena_producida, frecuencias = cadenas_y_frecuencia(out[i], ruta, i)
+        print("\nCadena producida:")
+        print(cadena_producida)
+        print("\nFrecuencia de aparición:")
+        imprimir_tabla(frecuencias)
+        for simbolo, frecuencia in frecuencias.items():
+            frecuencias_agregadas[simbolo].append(frecuencia)
+
+    # Se calcula el promedio de frecuencias después de todas las rotaciones para este objeto
+    promedios_frecuencias = {simbolo: sum(vals) / len(vals) if len(vals) > 0 else 0 for simbolo, vals in
+                             frecuencias_agregadas.items()}
+
+    frecuencias_globales_por_objeto[i] = promedios_frecuencias
+    print("\nPromedio de frecuencias:")
+    imprimir_tabla(promedios_frecuencias)
+    imprimir_y_graficar_frecuencias(promedios_frecuencias, f'Promedio de Frecuencias para Objeto {i}')
